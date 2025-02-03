@@ -1,0 +1,16 @@
+{% extends "_master.html" %}
+
+{% block title %}
+     Create group
+{% endblock title %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <p>{{ form.name.label_tag }} {{ form.name }}</p>
+    <p>{{ form.permissions.label_tag }} {{ form.permissions }}</p>
+    <small>*Note:<i>Specific permissions for this user. Hold down “Control”, or “Command” on a Mac, to select more than one.</i></small>
+    <hr> 
+    <button type="submit">Create group</button>
+</form>
+{% endblock content %}

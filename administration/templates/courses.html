@@ -1,0 +1,172 @@
+{% extends "_master.html" %}
+
+{% block title %}
+{% if data.is_edit_mode %} Edit {% else %} Add {% endif %} Courses
+{% endblock title %}
+
+{% block content %}
+<div class="p-2 rounded text-light top-header">
+    <div class="container row">
+      <div class="d-flex gap-3">
+        <h4 class="mr-5 mt-2">{% if data.is_edit_mode %} Edit {% else %} Add {% endif %} Courses</h4>
+        <button type="button" class="btn btn-primary ml-5 {% if data.is_edit_mode or form.errors %}autoClick{% endif %}" data-bs-toggle="modal" data-bs-target="#register-data">{% if data.is_edit_mode %} Edit {% else %} Add {% endif %} Course</button>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="register-data" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary">
+          <h5 class="modal-title" id="exampleModalLabel">{% if data.is_edit_mode %} Edit {% else %} Add {% endif %} Course</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                            <ul class="errorlist">
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="course_code">Course Code: </label>
+                        {{ form.course_code }}
+                        {{ form.course_code.errors }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="course_name">Course Name:</label>
+                        {{ form.course_name }}
+                        {{ form.course_name.errors }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="no_of_year">No of Years:</label>
+                        {{ form.no_of_year }}
+                        {{ form.no_of_year.errors }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                      {{ form.no_of_semesters.label }}
+                      {{ form.no_of_semesters }}
+                      {{ form.no_of_semesters.errors }}
+                      {% if data.is_edit_mode %}
+                      <small class="text-danger"><i>*It will delete subjects,time table,students,etc.</i></small>
+                      {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fee_per_sem">Fee per Semester:</label>
+                        {{ form.fee_per_sem }}
+                        {{ form.fee_per_sem.errors }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="exam_fee">Exam fee:</label>
+                        {{ form.exam_fee }}
+                        {{ form.exam_fee.errors }}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-1 w-100">Save</button>
+        </form>
+    </div>
+    <div class="modal-footer bg-secondary">
+      {% if data.is_edit_mode %}
+      <a href="{% url 'courses' %}?page={{ paging.page_obj.number }}" class="btn btn-warning">Cancel</a>
+      <a href="{% url 'edit-courses' data.course_id %}?page={{ paging.page_obj.number }}" class="btn btn-danger">Reset</a>
+      {% endif %}
+    </div>
+      </div>
+    </div>
+  </div>
+<hr>
+<table class="table table-striped table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col">S.N.</th>
+        <th scope="col">Course Code</th>
+        <th scope="col">Course Name</th>
+        <th scope="col">Fee per sem</th>
+        <th scope="col">Exam Fee</th>
+        <th scope="col">No of year/Semester</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for course in paging.page_obj %}
+      <tr class="{% if data.is_edit_mode and data.course_id == course.course_id %} bg-success {% endif %}">
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ course.course_code }}</td>
+        <td>{{ course.course_name }}</td>
+        <td>{{ course.fee_per_sem }}</td>
+        <td>{{ course.exam_fee }}</td>
+        <td>{{ course.no_of_year }}/{{ course.semester_count }}</td>
+        <td>
+          <a href="{% url 'edit-courses' course.course_id %}?page={{ paging.page_obj.number }}" class="btn btn-primary">Edit</a>
+          <a href="{% url 'delete-courses' course.course_id %}" class="btn btn-danger">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if paging.page_obj.paginator.num_pages > 1 %}
+  <div aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if paging.page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">1</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ paging.page_obj.previous_page_number }}">Previous</a>
+        </li>
+      {% endif %}
+      {% for num in paging.page_obj.paginator.page_range %}
+        {% if num < 4 or num > paging.page_obj.paginator.num_pages|add:-4 or num == paging.page_obj.number %}
+          <li class="page-item {% if paging.page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% elif num == 4 and paging.page_obj.number > 4 %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% elif num == paging.page_obj.paginator.num_pages|add:-3 and paging.page_obj.number < paging.page_obj.paginator.num_pages|add:-3 %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% elif num == paging.page_obj.paginator.num_pages|add:-4 and paging.page_obj.number < paging.page_obj.paginator.num_pages|add:-4 %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+      {% if paging.page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ paging.page_obj.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ paging.page_obj.paginator.num_pages }}">{{ paging.page_obj.paginator.num_pages }}</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+{% endif %}
+{% endblock content %}
+    
+    

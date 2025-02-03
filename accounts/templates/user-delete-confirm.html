@@ -1,0 +1,35 @@
+{% extends "_master.html" %}
+
+{% block title %}
+     Delete User
+{% endblock title %}
+
+{% block content %}
+<div class="admin-pane-form">
+    <p>All of the following related items will be deleted:</p>
+<h3>Summary</h3>
+<ul class="text-info">
+    <li>Users: 1</li>
+    <li>User-permission relationships: {{ permissions|length }}</li>
+</ul>
+
+<h3>Objects</h3>
+<ul>
+    <li>User: <span class="text-primary">{{ user.username }}</span></li>
+    {% for perm in permissions %}
+        <li class="text-danger">[-] User-permission relationship: {{ perm.name }}</li>
+    {% endfor %}
+    <hr>
+    {% for group in groups %}
+        <li class="text-danger">[-] Group: {{ group.name }}</li>
+    {% endfor %}
+</ul><hr>
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-danger" value="Confirm Delete">
+    <a class="btn btn-secondary" href="{% url 'manage-accounts' %}">Cancel</a>
+</form>
+</div>
+{% endblock content %}
+    
+    

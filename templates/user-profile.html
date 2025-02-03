@@ -1,0 +1,25 @@
+{% extends "_master.html" %}
+
+{% block content %}
+<div class="d-flex flex-column align-items-center bg-white p-4 rounded-lg shadow-sm">
+    <div class="position-relative">
+      <img class="rounded-circle border border-primary" style="width: 96px; height: 96px;" src="https://placehold.co/96x96" alt="Profile Picture" />
+    </div>
+    <h2 class="mt-4 fs-4 fw-bold text-dark">{{ user.username }}</h2>
+    <p class="text-muted small">0 posts • 41 followers • 25 following</p>
+    <p class="text-muted small">{{ user.first_name }}</p>
+    <a class="text-primary text-decoration-none" href="https://darpanadhikari.com.np">darpanadhikari.com.np</a>
+    
+    <div class="d-flex gap-3 mt-4">
+      <button class="btn btn-outline-secondary">Edit profile</button>
+      <button class="btn btn-outline-secondary">View archive</button>
+      <button class="btn btn-outline-secondary p-2">
+        <img aria-hidden="true" alt="Settings" src="https://openui.fly.dev/openui/24x24.svg?text=⚙️" />
+      </button>
+    </div>
+    <div class="mt-4">
+      <h3 class="fs-5 fw-semibold text-dark">Share Photos</h3>
+    </div>
+  </div>
+{% endblock content %}
+    

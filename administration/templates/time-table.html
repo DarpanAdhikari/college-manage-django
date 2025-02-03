@@ -1,0 +1,82 @@
+{% extends "_master.html" %}
+
+{% block title %}
+    Time Table
+{% endblock title %}
+
+{% block content %}
+<div class="p-2 rounded text-light top-header">
+    <div class="container row">
+      <div class="d-flex gap-3">
+        <h4 class="mr-5 mt-2">Time Table Management</h4>
+      </div>
+  </div>
+</div>
+<div class="row">
+    <div class="col-md-12 ml-2">
+        <section class=" mt-3">
+            <div class="container">
+                <div class="row" id="manual-table-create">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="course_code">Course Code:</label>
+                        <select class="form-select" aria-label="Default select" name="course_code" data-url="{% url 'time-table' %}" id="course_code" required>
+                            <option value="">Select Course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.course_id }}" {% if data.course == course.course_id %}selected{% endif %}>
+                                {{ course.course_name }}
+                            </option>
+                           {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="semester">Semester:</label>
+                        <select class="form-select" aria-label="Default select" name="semester" id="semester">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <hr>
+                <div id="time_table_container">
+                 
+                 {% if formset %}
+                 {% if error %}
+                 <p style="color: red;">{{ error }}</p>
+             {% endif %}
+             
+             <form method="post" action="">
+                 {% csrf_token %}
+                 <table border="1">
+                     <thead>
+                         <tr>
+                             <th>Day/Time</th>
+                             {% for subject in subjects %}
+                                 <th>{{ subject.name }}</th>
+                             {% endfor %}
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {% for day in weakDays %}
+                             <tr>
+                                 <td>{{ day.name }}</td>
+                                 {% for subject in subjects %}
+                                     <td>
+                                         {{ formset.forms|slice:forloop.counter0|first }}  <!-- Render specific form -->
+                                     </td>
+                                 {% endfor %}
+                             </tr>
+                         {% endfor %}
+                     </tbody>
+                 </table>
+                 <button type="submit">Save Timetable</button>
+             </form>
+                 {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}
+    

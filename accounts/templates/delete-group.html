@@ -1,0 +1,28 @@
+{% extends "_master.html" %}
+
+{% block title %}
+     Delete Group | {{ group_name }}
+{% endblock title %}
+
+{% block content %}
+<div class="admin-pane-form">
+    <p>Are you sure you want to delete the group <strong>{{ group_name }}</strong>? This action cannot be undone.</p>
+
+    <h2>Permissions for this Group</h2>
+    <ul>
+        {% for permission in permissions %}
+        <li class="text-danger">[-] {{ permission.name }}</li>
+        {% empty %}
+            <li>No permissions assigned to this group.</li>
+        {% endfor %}
+    </ul>
+    <hr>
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-danger" value="Confirm Delete">
+    <a class="btn btn-secondary" href="{% url 'manage-groups' %}">Cancel</a>
+</form>
+</div>
+{% endblock content %}
+    
+    

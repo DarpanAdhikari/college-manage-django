@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <title>QR Scanner</title>
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  <style>
+      *{
+        padding:0;
+        margin:0;
+        box-sizing:border-box;
+      }
+      body{
+        display:flex;
+        justify-content:center;
+      }
+      #qr-scanner-container.active{
+        box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+        display: flex; 
+        justify-content: center;
+      }
+        .custom-select {
+            position: relative;
+            display: inline-block;
+            width: 200px;
+        }
+    
+        select,
+        .html5-qrcode-element {
+            margin-top: 2px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+    
+        .custom-select::after {
+            content: "▼";
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 12px;
+            color: #888;
+            transition: color 0.3s;
+        }
+    
+        select:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+        }
+    
+        select:hover+.custom-select::after {
+            color: #007BFF;
+        }
+    
+        #html5-qrcode-anchor-scan-type-change,
+        #html5-qrcode-button-camera-start,
+        #html5-qrcode-button-camera-stop {
+            margin-top: 3px;
+            width: max-content;
+            text-decoration: none !important;
+        }
+      #my-qr-reader{
+        width: 500px;
+      }
+  </style>
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-12">
+          <div id="qr-scanner-container">
+            <div id="my-qr-reader" class="shadow-lg rounded"></div>
+          </div>
+        </div>
+      </div>
+  {% bootstrap_javascript %}
+  <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+  }
+  
+  const identifier = getQueryParam('id');
+  let htmlScanner = null;
+  let lastScannedResult = '';
+  
+  function onScanSuccess(decodeText, decodeResult) {
+      if (decodeText !== lastScannedResult) {
+          lastScannedResult = decodeText;
+          if (window.opener) {
+              window.opener.postMessage({
+                  type: 'popupMessage',
+                  id: identifier, 
+                  data: decodeText
+              }, window.location.origin);
+          }
+      }
+  }
+  
+  function startScanner() {
+      if (!htmlScanner) {
+          htmlScanner = new Html5QrcodeScanner("my-qr-reader", {
+              fps: 10,
+              qrbox: 300
+          });
+          htmlScanner.render(onScanSuccess);
+      }
+  }
+  
+  startScanner();
+  
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% extends "_master.html" %}
+
+{% block title %}
+    Edit Group | 
+{% endblock title %}
+{% block content %}
+<form method="post">
+    {% for field in form %}
+      {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
+    {% endfor %}
+    {% csrf_token %}
+    <p>{{ form.name.label_tag }} {{ form.name }}</p>
+    <p>{{ form.permissions.label_tag }} {{ form.permissions }}</p>
+    <button type="submit">Save</button>
+    <a href="{% url 'manage-groups' %}" class="btn btn-danger">Cancel</a>
+</form>
+{% endblock content %}
+    
+    

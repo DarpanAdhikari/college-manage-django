@@ -1,0 +1,149 @@
+{% extends "_master.html" %}
+
+{% block title %}
+    Class Result  {% if data.is_edit_mode %}| Edit Salary {% endif %}
+      
+{% endblock title %}
+
+{% block content %}
+<div class="p-2 rounded text-light top-header">
+    <div class="container row">
+      <div class="d-flex gap-3">
+        <h4 class="mr-5 mt-2">Teachers Salary Management</h4>
+        <button type="button" class="btn btn-primary ml-5 {% if data.is_edit_mode or form.errors %}autoClick{% endif %}" data-bs-toggle="modal" data-bs-target="#register-data">{% if data.is_edit_mode %} Edit {% else %} Add {% endif %} Form</button>
+      </div>
+  </div>
+</div>
+{% comment %} Insert salary detail {% endcomment %}
+<div class="modal fade" id="register-data" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" data-bs-backdrop="static" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary">
+        <h5 class="modal-title" id="exampleModalLabel">{% if data.is_edit_mode %}Edit Salary {% else %} Create Salary {% endif %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mt-3">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="course_code">Post:* </label>
+                      {{ form.salary_position }}
+                      {{ form.salary_position.errors }}
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="course_name">Basic Salary:*</label>
+                      {{ form.basic_salary }}
+                      {{ form.basic_salary.errors }}
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="no_of_year">Medical Allowance:</label>
+                      {{ form.medical_allowance }}
+                      {{ form.medical_allowance.errors }}
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label for="semester">Home Rent Allowance:</label>
+                      {{ form.hr_allowance }}
+                      {{ form.hr_allowance.errors }}
+                  </div>
+              </div>
+          </div>
+          <button type="submit" class="btn btn-primary mt-1 w-100">Save</button>
+      </form>
+  </div>
+  <div class="modal-footer bg-secondary">
+    {% if data.is_edit_mode %}
+    <a href="{% url 'edit-salary' data.salary_id %}?page={{ paging.page_obj.number }}" class="btn btn-danger">Reset</a>
+    <a href="{% url 'teachers-salary' %}?page={{ paging.page_obj.number }}" class="btn btn-warning">Cancel</a>
+    {% endif %}
+  </div>
+    </div>
+  </div>
+</div>
+{% comment %} Form completed {% endcomment %}
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead class="table-light">
+      <tr>
+        <th scope="col">S.N.</th>
+        <th scope="col">Post</th>
+        <th scope="col">Basic Salary</th>
+        <th scope="col">Medical Allowange</th>
+        <th scope="col">Home Rent Allowange</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      {% for salary in paging.page_obj %}  
+      <tr class="{% if data.is_edit_mode and data.salary_id == salary.salary_id %} bg-success {% endif %}">
+        <td scope="row">{{ forloop.counter }}</td>
+        <td scope="row">{{ salary.salary_position }}</td>
+        <td scope="row">{{ salary.basic_salary }}</td>
+        <td scope="row">{{ salary.medical_allowance }}</td>
+        <td scope="row">{{ salary.hr_allowance }}</td>
+        <td>
+          <a href="{% url 'edit-salary' salary.salary_id %}?page={{ paging.page_obj.number }}" class="btn btn-primary">Edit</a>
+          <a href="{% url 'delete-salary' salary.salary_id %}" class="btn btn-danger">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if paging.page_obj.paginator.num_pages > 1 %}
+  <div aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {% if paging.page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">1</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ paging.page_obj.previous_page_number }}">Previous</a>
+        </li>
+      {% endif %}
+      {% for num in paging.page_obj.paginator.page_range %}
+        {% if num < 4 or num > paging.page_obj.paginator.num_pages|add:-4 or num == paging.page_obj.number %}
+          <li class="page-item {% if paging.page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% elif num == 4 and paging.page_obj.number > 4 %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% elif num == paging.page_obj.paginator.num_pages|add:-3 and paging.page_obj.number < paging.page_obj.paginator.num_pages|add:-3 %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% elif num == paging.page_obj.paginator.num_pages|add:-4 and paging.page_obj.number < paging.page_obj.paginator.num_pages|add:-4 %}
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+      {% if paging.page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ paging.page_obj.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ paging.page_obj.paginator.num_pages }}">{{ paging.page_obj.paginator.num_pages }}</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+{% endif %}
+</div>
+{% endblock content %}
+  
+    
+    

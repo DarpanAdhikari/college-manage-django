@@ -1,0 +1,32 @@
+{% extends "_master.html" %}
+{% block title %}
+    Edit User | {{ username }}
+{% endblock title %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            {% if field.errors %}<div class="error">{{ field.errors }}</div>{% endif %}
+        {% endfor %}
+        <p>{{ form.username.label_tag }} {{ form.username }}</p>
+        <p>{{ form.first_name.label_tag }} {{ form.first_name }}</p>
+        <p>{{ form.last_name.label_tag }} {{ form.last_name }}</p>
+        <p>{{ form.email.label_tag }} {{ form.email }}</p>
+        <hr>
+        <p>{{ form.is_superuser.label_tag }} {{ form.is_superuser }}</p>
+        <p>{{ form.is_staff.label_tag }} {{ form.is_staff }}</p>
+        <p>{{ form.is_active.label_tag }} {{ form.is_active }}</p>
+        <hr>
+        <p>{{ form.groups.label_tag }} {{ form.groups }}</p>
+        <small>*Note:<i>please select at max one group for user</i></small>
+        <p>{{ form.user_permissions.label_tag }} {{ form.user_permissions }}</p>
+        <small>*Note:<i>Specific permissions for this user. Hold down “Control”, or “Command” on a Mac, to select more than one.</i></small>
+        <hr>
+        <p>
+            {{ form.password.label_tag }} <a href="{% url 'change-password' user_id %}" class="btn btn-info">Change Password</a>
+        </p>
+        <hr>
+        <button type="submit">Save</button>
+        <a href="{% url 'manage-accounts' %}" class="btn btn-danger">Cancel</a>
+    </form>
+{% endblock content %}

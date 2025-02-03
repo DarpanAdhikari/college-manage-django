@@ -1,0 +1,95 @@
+{% extends "_master.html" %}
+
+{% block title %}
+    Student Attendance
+{% endblock title %}
+  
+{% block content %}
+<div class="p-2 rounded text-light top-header mb-2">
+    <div class="container row">
+      <div class="d-flex gap-3">
+        <h4 class="mr-5 mt-2">Student Attendance</h4>
+      </div>
+  </div>
+</div>
+<hr>
+<div class="row" id="manual-table-create">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="course_code">Course Code:</label>
+            <select class="form-select" aria-label="Default select" name="course_code" data-url="{% url 'student-attendance' %}" id="course_code" data-sem="{% if data %}{{ data.sem }}{% endif %}" data-cam="True" required>
+              <option value="">Select Course</option>
+              {% for course in courses %}
+                  <option value="{{ course.course_id }}" {% if data.course == course.course_id %}selected{% endif %}>
+                      {{ course.course_name }}
+                  </option>
+              {% endfor %}
+          </select>          
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="form-group">
+        <label for="semester">Semester:</label>
+        <select class="form-select" aria-label="Default select" name="semester" id="semester">
+          <option value="">No Semester</option>
+        </select>
+    </div>
+</div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-md-12">
+    <div id="qr-scanner-container">
+      <div id="my-qr-reader" class="shadow-lg rounded"></div>
+    </div>
+  </div>
+</div>
+<hr>
+<div class="row">
+  <div class=" col-lg-12 col-md-12 col-sm-12 ">
+    <table class="table table-striped table-hover caption-top">
+      <caption class="fs-5 fw-bolder bg-secondary text-info">Currently Taken Attendance</caption>
+        <thead class="bg-dark text-white">
+          <tr>
+            <th scope="col">S.N.</th>
+            <th scope="col">Name</th>
+            <th scope="col">Username</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody id="attendance-table">
+        </tbody>
+      </table>
+  </div>
+  {% if pre_attendance %}
+  <div class="col-md-12 col-lg-12 col-sm-12">
+   <table class="table caption-top">
+     <caption class="fs-5 fw-bolder bg-secondary text-info">Previously Taken Attendance</caption>
+     <thead>
+       <tr>
+         <th scope="col">S.N.</th>
+         <th scope="col">Name</th>
+         <th scope="col">Username</th>
+         <th scope="col">Course</th>
+         <th scope="col">Semester</th>
+         <th scope="col">Date</th>
+       </tr>
+     </thead>
+     <tbody>
+       
+       {% for attendance in pre_attendance %}   
+       <tr>
+         <th scope="row">{{ forloop.counter }}</th>
+         <td>{{ attendance.student.first_name }} {{ attendance.student.middle_name|default:'' }} {{ attendance.student.last_name }}</td>
+         <td>{{ attendance.student.user.username }}</td>
+         <td>{{ attendance.sem.course.course_name }}</td>
+         <td>{{ attendance.sem.semester }}</td>
+         <td>{{ attendance.attendance_date }}</td>
+       </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+ </div>
+  {% endif %}
+</div>
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends "_master.html" %}
+
+{% block title %}
+     QR code viewer | {{ user.username }}
+{% endblock title %}
+
+{% block content %}
+<div class="admin-pane-form d-flex flex-column justify-content-center d-flex align-items-center">
+    <img class="w-50 h-50" src="data:image/png;base64,{{ qr_code_base64 }}" height="100" width="100" alt="QR Code">
+    <div class="actions">
+        <a href="{% url 'manage-accounts' %}" class="btn btn-info"><i class="fas fa-arrow-left"></i> Go Back</a>
+        <a href="data:image/png;base64,{{ qr_code_base64 }}" class="btn btn-primary" download="{{ user.username }}-qrcode"><i class="fas fa-download"></i> Download</a>
+    </div>
+</div>
+{% endblock content %}
+    
+    

@@ -1,0 +1,199 @@
+{% load static %}
+{% load active_url %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="csrf-token" content="{{ csrf_token }}">
+        <link rel="shortcut icon"
+              href="https://darpanadhikari.com.np/addition/images/darpan.png"
+              type="image/x-icon">
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        <link rel='stylesheet' href="{% static 'css/dashboard.css' %}">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+              rel="stylesheet" />
+              <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <title>CMS -
+            {% block title %}
+            {% endblock title %}
+        </title>
+        {% block style %}
+        {% endblock style %}
+    </head>
+    <body>
+        <div class="wrapper">
+            <aside id="sidebar" class="expand">
+                <div class="d-flex">
+                    <button class="toggle-btn" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="#fff"
+                             width="24px"
+                             height="24px"
+                             viewBox="0 0 24 24">
+                            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+                        </svg>
+                    </button>
+                    <div class="sidebar-logo">
+                        <a href="{% url 'login' %}">Dashboard</a>
+                    </div>
+                </div>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-item">
+                        <a href="{% url 'index' %}"
+                           class="sidebar-link {% active request '/' %}">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#"
+                           class="sidebar-link collapsed has-dropdown {% active request 'register-teacher' 'teacher-attendance' 'teachers-salary' 'assign-teacher' %}"
+                           data-bs-toggle="collapse"
+                           data-bs-target="#teacher"
+                           aria-expanded="false"
+                           aria-controls="teacher">
+                            <i class="fas fa-building-user"></i>
+                            <span>Teacher</span>
+                        </a>
+                        <ul id="teacher" class="sidebar-dropdown list-unstyled collapse">
+                            <li class="sidebar-item">
+                                <a href="{% url 'register-teacher' %}"
+                                   class="sidebar-link {% active request 'register-teacher' %}"><i class="fas fa-user-plus"></i> Register</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="{% url 'teacher-attendance' %}"
+                                   class="sidebar-link  {% active request 'teacher-attendance' %}"><i class="fas fa-clipboard-user"></i>Attendance</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="{% url 'teachers-salary' %}"
+                                   class="sidebar-link  {% active request 'teachers-salary' %}"><i class="fas fa-money-bill"></i>Sallary</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="{% url 'assign-teacher' %}"
+                                   class="sidebar-link  {% active request 'assign-teacher' %}"><i class="fas fa-book"></i>Assign Subject</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#"
+                           class="sidebar-link collapsed has-dropdown {% active request 'register-student' 'student-attendance' 'student-fee' %}"
+                           data-bs-toggle="collapse"
+                           data-bs-target="#student"
+                           aria-expanded="false"
+                           aria-controls="student">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Student</span>
+                        </a>
+                        <ul id="student" class="sidebar-dropdown list-unstyled collapse">
+                            <li class="sidebar-item">
+                                <a href="{% url 'register-student' %}"
+                                   class="sidebar-link {% active request 'register-student' %}"><i class="fas fa-user-plus"></i>Register</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="{% url 'student-attendance' %}"
+                                   class="sidebar-link  {% active request 'student-attendance' %}"><i class="fas fa-clipboard-user"></i>Attendance</a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="{% url 'student-fee' %}"
+                                   class="sidebar-link  {% active request 'student-fee' %}"><i class="fas fa-cash-register"></i>Fee Register</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'courses' %}"
+                           class="sidebar-link {% active request 'courses' %}">
+                            <i class="fas fa-book"></i>
+                            <span>Courses</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{% url 'subjects' %}"
+                           class="sidebar-link {% active request 'subjects' %}">
+                            <i class="fas fa-book-medical"></i>
+                            <span>Subjects</span>
+                        </a>
+                    </li>
+                    {% if perms.auth.view_user or perms.auth.add_user or perms.auth.change_user or perms.auth.delete_user or perms.auth.view_group or perms.auth.add_group or perms.auth.change_group or perms.auth.delete_group %}
+                        <li class="sidebar-item">
+                            <a href="#"
+                               class="sidebar-link collapsed has-dropdown {% active request 'manage-accounts' 'manage-groups' %}"
+                               data-bs-toggle="collapse"
+                               data-bs-target="#account"
+                               aria-expanded="false"
+                               aria-controls="account">
+                                <i class="fas fa-key"></i>
+                                <span>Manage Accounts</span>
+                            </a>
+                            <ul id="account" class="sidebar-dropdown list-unstyled collapse">
+                                {% if perms.auth.view_user or perms.auth.add_user or perms.auth.change_user or perms.auth.delete_user %}
+                                    <li class="sidebar-item">
+                                        <a href="{% url 'manage-accounts' %}"
+                                           class="sidebar-link {% active request 'manage-accounts' %}"><i class="fas fa-users"></i>Users</a>
+                                    </li>
+                                {% endif %}
+                                {% if perms.auth.view_group or perms.auth.add_group or perms.auth.change_group or perms.auth.delete_group %}
+                                    <li class="sidebar-item">
+                                        <a href="{% url 'manage-groups' %}"
+                                           class="sidebar-link  {% active request 'manage-groups' %}"><i class="fas fa-people-group"></i>Groups</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+                <div class="sidebar-footer dropup-center dropup">
+                    <a href="#"
+                       class="sidebar-link dropdown-toggle"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                        <span>{{ user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if user.is_authenticated %}
+                            <li>
+                                <a class="dropdown-item text-white no-hover"
+                                   href="{% url 'user-change-password' user.id %}"><i class="fas fa-lock"></i> Change Password</a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                           <form action="{% url 'logout' %}" method="post" style="padding: 0; background: none; border: none;">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item text-white no-hover"><i class="fas fa-right-from-bracket"></i> Log Out</button>
+                           </form> 
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            <main class="main p-2 position-relative">
+                {% block content %}
+                {% endblock content %}
+            </main>
+        </div>
+        {% if messages %}
+            <div class="fixed-bottom">
+                {% for message in messages %}
+                    <div class="alert {% if 'success' in message.tags %} alert-success {% elif 'error' in message.tags %} alert-danger{% else %} alert-warning {% endif %} alert-dismissible fade show"
+                         role="alert">
+                        <strong>Alert!</strong> {{ message }}
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% bootstrap_javascript %}
+        {% block script %}
+        {% endblock script %}
+        <script src="{% static 'js/dashboard.js' %}"></script>
+        <script src="{% static 'js/ajax.js' %}"></script>
+        <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+    </body>
+</html>

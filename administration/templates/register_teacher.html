@@ -1,0 +1,283 @@
+{% extends "_master.html" %}
+{% block title %}
+  Teacher Registration
+{% endblock title %}
+{% block content %}
+  <div class="p-2 rounded text-light top-header">
+    <div class="container row">
+      <div class="d-flex gap-3">
+        <h4 class="mr-5 mt-2">Teacher Management System</h4>
+        <button type="button"
+                class="btn btn-primary ml-5 {% if is_edit_mode or teacher_form..errors or user_form..errors or address_form..errors or contact_form.n.errors %}autoClick{% endif %}"
+                data-bs-toggle="modal"
+                data-bs-target="#register-data">
+          {% if is_edit_mode %}
+            Edit
+          {% else %}
+            Add
+          {% endif %}
+          Teacher
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade"
+       id="register-data"
+       tabindex="-1"
+       role="dialog"
+       aria-labelledby="myLargeModalLabel"
+       data-bs-backdrop="static"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary">
+          <h5 class="modal-title" id="exampleModalLabel">
+            {% if is_edit_mode %}
+              Edit
+            {% else %}
+              Add
+            {% endif %}
+            Teacher
+          </h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="{{ form.first_name.id_for_label }}">First Name:</label>
+                  {{ teacher_form.first_name }}
+                  {{ teacher_form.first_name.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="{{ form.middle_name.id_for_label }}">Middle Name:</label>
+                  {{ teacher_form.middle_name }}
+                  {{ teacher_form.middle_name.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="last_name">Last Name:*</label>
+                  {{ teacher_form.last_name }}
+                  {{ teacher_form.last_name.errors }}
+                </div>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-4">
+                <div class="formp">
+                  <label for="email">Teacher Email:*</label>
+                  {{ user_form.email }}
+                  {{ user_form.email.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="formp">
+                  <label for="phone_no">Mobile No:*</label>
+                  {{ contact_form.mobile_no }}
+                  {{ contact_form.mobile_no.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="formp">
+                  <label for="profile_image">Teachers Profile:*</label>
+                  {{ teacher_form.profile_image }}
+                  {{ teacher_form.profile_image.errors }}
+                </div>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="teacher_status">Teacher Status:*</label>
+                  {{ teacher_form.applicant_status }}
+                  {{ teacher_form.applicant_status.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="dob">Date of Birth:*</label>
+                  {{ teacher_form.dob }}
+                  {{ teacher_form.dob.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="formp">
+                  <label for="other_phone">Other Phone:*</label>
+                  {{ contact_form.other_phone }}
+                  {{ contact_form.other_phone.errors }}
+                </div>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-4">
+                <div class="formp">
+                  <label for="gender">Gender:*</label>
+                  {{ teacher_form.gender }}
+                  {{ teacher_form.gender.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="permanent_address">Permanent Address:*</label>
+                  {{ address_form.permanent_address }}
+                  {{ address_form.permanent_address.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="formp">
+                  <label for="current_address">Current Address:*</label>
+                  {{ address_form.current_address }}
+                  {{ address_form.current_address.errors }}
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="salary_type">Salary Type:*</label>
+                  {{ teacher_form.salary }}
+                  {{ teacher_form.salary.errors }}
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="higher_edu_cmp">H.E. Completed:*</label>
+                  {{ teacher_form.higher_edu_cmp }}
+                  {{ teacher_form.higher_edu_cmp.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="degree">Degree:*</label>
+                  {{ teacher_form.degree }}
+                  {{ teacher_form.degree.errors }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="formp">
+                  <label for="graduation_certificate">Upload Certificate:*</label>
+                  <input type="file" name="graduation_certificate" class="form-control">
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-1 w-100">Save</button>
+          </form>
+        </div>
+        <div class="modal-footer bg-secondary">
+          {% if is_edit_mode %}
+            <a href="{% url 'register-teacher' %}?page={{ paging.page_obj.number }}" class="btn btn-warning">Cancel</a>
+            <a href="{% url 'edit-teacher' teacher_id %}?page={{ paging.page_obj.number }}" class="btn btn-danger">Reset</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">S.N.</th>
+          <th scope="col">Name</th>
+          <th scope="col">Username</th>
+          <th scope="col">Status</th>
+          <th scope="col">Profile Image</th>
+          <th scope="col">Gender</th>
+          <th scope="col">Salary</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for teacher in paging.page_obj %}
+          <tr class="{% if is_edit_mode and teacher_id == teacher.teacher_id %} bg-success {% endif %}">
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ teacher.first_name|default:"" }} {{ teacher.middle_name|default:"" }} {{ teacher.last_name|default:"" }}</td>
+            <td>{{ teacher.user.username }}</td>
+            <td>
+              {% if teacher.applicant_status == 1 %}
+                <span class="badge bg-info">Permanent</span>
+              {% else %}
+                <span class="badge bg-info">Part Time</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if teacher.profile_image %}
+                <img src="{{ teacher.profile_image.url }}"
+                     class="img-thumbnail"
+                     height=""
+                     width=""
+                     alt="">
+              {% else %}
+                <span class="badge bg-danger">No Image</span>
+              {% endif %}
+            </td>
+            <td>{{ teacher.gender }}</td>
+            <td>
+              <span class="badge bg-success">{{ teacher.salary }}</span>
+            </td>
+            <td>
+              <a href="{% url 'user-profile' teacher.user.username %}" class="btn btn-info text-white m-1"><i class="fas fa-eye"></i> View</a>
+              <a href="{% url 'edit-teacher' teacher.teacher_id %}?page={{ paging.page_obj.number }}"
+                 class="btn btn-primary m-1">Edit</a>
+              <a href="{% url 'delete-teacher' teacher.teacher_id %}"
+                 class="btn btn-danger m-1">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if paging.page_obj.paginator.num_pages > 1 %}
+      <div aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          {% if paging.page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link"
+                 href="?page={{ paging.page_obj.previous_page_number }}">Previous</a>
+            </li>
+          {% endif %}
+          {% for num in paging.page_obj.paginator.page_range %}
+            {% if num < 4 or num > paging.page_obj.paginator.num_pages|add:-4 or num == paging.page_obj.number %}
+              <li class="page-item {% if paging.page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+              </li>
+            {% elif num == 4 and paging.page_obj.number > 4 %}
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+            {% elif num == paging.page_obj.paginator.num_pages|add:-3 and paging.page_obj.number < paging.page_obj.paginator.num_pages|add:-3 %}
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+            {% elif num == paging.page_obj.paginator.num_pages|add:-4 and paging.page_obj.number < paging.page_obj.paginator.num_pages|add:-4 %}
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+          {% if paging.page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ paging.page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link"
+                 href="?page={{ paging.page_obj.paginator.num_pages }}">{{ paging.page_obj.paginator.num_pages }}</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+{% endblock content %}

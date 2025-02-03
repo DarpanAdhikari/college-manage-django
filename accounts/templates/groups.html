@@ -1,0 +1,100 @@
+{% extends "_master.html" %}
+{% block title %}
+  Manage Groups
+{% endblock title %}
+{% block content %}
+  <div class="p-2 rounded text-light top-header mb-2">
+    <div class="container row">
+      <div class="d-flex gap-3">
+        <h4 class="mr-5 mt-2">Group Management</h4>
+        <button class="btn btn-info"
+                data-bs-toggle="modal"
+                data-bs-target="#register-data">Recent action</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class=" col-lg-12 col-md-12 col-sm-12 ">
+      {% if perms.auth.add_group %}
+        <a href="{% url 'create-group' %}" class="btn btn-primary m-2 float-end">+ Add Group</a>
+      {% endif %}
+      <table class="table table-striped table-hover table-bordered table-responsive">
+        <thead class="bg-dark text-white">
+          <tr>
+            <th>Group Name</th>
+            {% if perms.auth.change_group or perms.auth.delete_group %}<th>Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for group in groups %}
+            <tr>
+              <td>{{ group.name }}</td>
+              {% if perms.auth.change_group or perms.auth.delete_group %}
+                <td>
+                  {% if perms.auth.change_group %}
+                    <a href="{% url 'edit-group' group.id %}" class="btn btn-primary m-1">Edit</a>
+                  {% endif %}
+                  {% if perms.auth.delete_group %}
+                    <a href="{% url 'delete-group' group.id %}" class="btn btn-danger m-1">Delete</a>
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="modal fade"
+         id="register-data"
+         tabindex="-1"
+         role="dialog"
+         aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-secondary text-white">
+            <h5 class="modal-title" id="exampleModalLabel">Recent Actions</h5>
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-striped table-bordered table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>Actor</th>
+                  <th>Action</th>
+                  <th>Action On</th>
+                  <th>Action Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entry in log %}
+                  <tr>
+                    <td>{{ entry.user.first_name }} {{ entry.user.last_name }}</td>
+                    <td>
+                      {% if entry.action_flag == 1 %}
+                        <span class="badge rounded-pill bg-success">Added</span>
+                      {% elif entry.action_flag == 2 %}
+                        <span class="badge rounded-pill bg-primary">Changed</span>
+                      {% elif entry.action_flag == 3 %}
+                        <span class="badge rounded-pill bg-danger">Deleted</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ entry.object_repr|escape }}</td>
+                    <td>{{ entry.action_time|date:"d M Y H:i" }}</td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="2" class="text-center">No recent actions found.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

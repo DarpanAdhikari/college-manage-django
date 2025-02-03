@@ -1,0 +1,33 @@
+from django.urls import path
+from . import views,ajax
+
+urlpatterns = [
+    path('',views.index,name='index'),
+    path('register-teacher/',views.register_teacher,name='register-teacher'),
+    path('register-teacher/<int:teacher_id>/',views.register_teacher,name='edit-teacher'),
+    path('delete-teacher/<int:teacher_id>/',views.delete_teacher,name='delete-teacher'),
+    path('teacher-attendance/',views.teacher_attendance,name='teacher-attendance'),
+    path('teachers-salary/',views.teachers_salary,name='teachers-salary'),
+    path('teachers-salary/<int:salary_id>/',views.teachers_salary,name='edit-salary'),
+    path('delete-salary/<int:salary_id>/',views.delete_salary,name='delete-salary'),
+    path('assign-subject-to-teacher/',views.assign_subject_teacher,name='assign-teacher'),
+    path('edit-assign-subject/<int:assign_id>/',views.assign_subject_teacher,name='edit-assign'),
+    path('delete-assign-subject/<int:assign_id>/',views.delete_assigned_subjects,name='delete-assign'),
+    path('register-student/',views.register_student,name='register-student'),
+    path('register-student/<int:student_id>/',views.register_student,name='edit-student'),
+    path('delete-student/<int:student_id>/',views.delete_student,name='delete-student'),
+    path('student-attendance/',views.student_attendance,name='student-attendance'),
+    path('student-fee-management/',views.students_fee_manage,name='student-fee'),
+    path('payment/<int:sem_id>/<int:stud_id>/',views.esewa_payment_verify,name='payment'),
+    path('courses/',views.courses,name='courses'),
+    path('courses/<int:course_id>/',views.courses,name='edit-courses'),
+    path('delete-course/<int:course_id>/',views.delete_course,name='delete-courses'),
+    path('subjects/',views.subjects,name='subjects'),
+    path('subjects/<int:course_id>/',views.subjects,name='filter-subjects'),
+    path('subjects/<int:course_id>/<int:sem_id>/',views.subjects,name='edit-subjects'),
+    path('delete-subject/<int:sub_id>/',views.delete_subject,name='delete-subjects'),
+    path('scanner/',views.scanner,name="scan"),
+    path('semester-request/',ajax.semester_request,name='semester-request'),
+    path('take-teacher-attendance/',ajax.teacherAttendance,name='take-teacher-attendance'),
+    path('take-student-attendance/',ajax.studentAttendance,name='take-student-attendance'),
+]

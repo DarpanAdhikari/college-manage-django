@@ -1,0 +1,206 @@
+{% extends "_master.html" %}
+
+{% block title %}
+Class Result
+{% endblock title %}
+
+{% block content %}
+{% load custom_filters %}
+<div class="p-2 rounded text-light top-header">
+    <div class="container row">
+        <div class="d-flex gap-3">
+            <h4 class="mr-5 mt-2">Students Fee Management</h4>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="row" id="manual-table-create">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="course_code">Course Code:</label>
+            <select class="form-select" aria-label="Default select" name="course_code"
+                    data-url="{% url 'student-fee' %}" id="course_code" data-sem="{% if sem %}{{ sem }}{% endif %}"
+                    required>
+                <option value="">Select Course</option>
+                {% for course in courses %}
+                <option value="{{ course.course_id }}" {% if select_course == course.course_id %}selected{% endif %}>
+                    {{ course.course_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="semester">Semester:</label>
+            <select class="form-select" aria-label="Default select" name="semester" id="semester">
+                <option value="">No Semester</option>
+            </select>
+        </div>
+    </div>
+</div>
+<hr>
+
+{% if sem and students %}
+<div class="row">
+    <div class="col-md-12 ml-2">
+        <section class="border mt-3">
+            <table class="w-100 table table-striped table-hover" cellpadding="3">
+                <tbody>
+                <tr>
+                    <td colspan="9" class=" text-center">
+                        <h4>Students fee details</h4>
+                    </td>
+                </tr>
+                <tr class="table-three">
+                    <th>Sr No.</th>
+                    <th>Roll No.</th>
+                    <th>Transaction Code</th>
+                    <th>Student Name</th>
+                    <th>Amount (Rs.)</th>
+                    <th>Payable</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for student in students %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ student.roll_no }}</td>
+                    <td>
+                        {% with fee_paid_details=student_fee_dates|get_item:student.id %}
+                        <ul class="list-group">
+                            {% for detail in fee_paid_details %}
+                            <li class="border border-end-0 shadow-sm rounded text-warning">{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endwith %}
+                    </td>
+                    <td>{{ student.first_name }} {{ student.middle_name|default:"" }} {{ student.last_name }}</td>
+                    <td>
+                        {% if student.sem and student.sem.course %}
+                        {% with total_fee=student.sem.course.fee_per_sem|add:student.sem.course.exam_fee %}
+                        {{ total_fee }}
+                        {% endwith %}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="badge rounded-pill bg-info">
+                            {% if student.sem and student.sem.course %}
+                            {% with total_fee=student.sem.course.fee_per_sem|add:student.sem.course.exam_fee %}
+                            {% with current_fee=student_fee_amounts|get_item:student.id %}
+                            {{ total_fee|subtract:current_fee }}
+                            {% endwith %}
+                            {% endwith %}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </button>
+                    </td>
+                    <td>
+                        {% with total_fee=student.sem.course.fee_per_sem|add:student.sem.course.exam_fee %}
+                        {% with current_fee=student_fee_amounts|get_item:student.id %}
+                        {% if total_fee > current_fee %}
+                        <a href="{% url 'student-fee' %}?sem={{ sem }}&stud={{ student.id }}" class="btn btn-primary">Pay</a>
+                        {% endif %}
+                        {% endwith %}
+                        {% endwith %}
+                        <a href="" class="btn btn-secondary">View Bill</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
+{% endif %}
+{% if pay %}
+<form action="{{ pay.payUrl }}" method="post" style="display: none;">
+    {% for key, value in pay.data.items %}
+        <input type="text" name="{{ key }}" value="{{ value }}"><br>
+    {% endfor %}
+    <button type="submit" class="autoClick"></button>
+</form>
+{% endif %}
+{% if form and not pay %}
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary">
+                <h5 class="modal-title" id="exampleModalLabel">Pay Fee</h5>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content" id="formTabsContent">
+                    <div class="tab-pane fade show active" id="manualPay" role="tabpanel" aria-labelledby="manual-tab">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="semester_fee" value="{{ sem }}">
+                            <input type="hidden" name="student" value="{{ student }}">
+                            {% if form.non_field_errors %}
+                            <ul class="errorlist">
+                                {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            <div class="row">
+                                <div class="form-group">
+                                    <label for="course_code">Amount: </label>
+                                    {{ form.amount }}
+                                    {{ form.amount.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <label for="payment-method">Payment Method</label>
+                                    {{ form.payment_method }}
+                                    {{ form.payment_method.errors }}
+                                </div>
+                            </div>
+                            <div class="row" id="invoice_num">
+                                <div class="form-group">
+                                    <label for="course_code">Transaction Code: </label>
+                                    {{ form.invoice_num }}
+                                    {{ form.invoice_num.errors }}
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-1 w-100">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-secondary">
+                <a href="{% url 'student-fee' %}?sem={{ sem }}" class="btn btn-warning">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
+    
+
+{% block script %}
+<script>
+    const payType = document.querySelector('#payment');
+    payType.addEventListener("change",(e)=>{
+        let val = e.target.value;
+        if(val == 'e-sewa'){
+            document.getElementById('invoice_num').style.display = "none";
+            document.getElementById('invoice_num').querySelector('input').removeAttribute("required");
+        }else{
+            document.getElementById('invoice_num').style.display = "block";
+            document.getElementById('invoice_num').querySelector('input').setAttribute("required");
+        }
+    })
+    if(payType.value == 'e-sewa'){
+            document.getElementById('invoice_num').style.display = "none";
+            document.getElementById('invoice_num').querySelector('input').removeAttribute("required");
+        }else{
+            document.getElementById('invoice_num').style.display = "block";
+            document.getElementById('invoice_num').querySelector('input').setAttribute("required");
+    }
+  </script>
+{% endblock script %}
+    

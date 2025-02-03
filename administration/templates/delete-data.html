@@ -1,0 +1,39 @@
+{% extends "_master.html" %}
+
+{% block title %}
+    Delete | {{ name }}
+{% endblock title %}
+{% block content %}
+<div class="admin-pane-form">
+    <p>Are you sure you want to delete the <strong>{{ name }}</strong>? This action cannot be undone.</p>
+
+    <h2>Other Data Related to this <strong>{{ name }}</strong></h2>
+    
+    <ul>
+        {% for key, items in related_items.items %}
+            <li>
+                <strong>{{ key|capfirst }}</strong>:
+                {% if items.0 %}
+                    <ul>
+                        {% for item in items %}
+                            <li class="text-danger">[-] {{ item|default:"No data" }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <span class="text-danger">[-] {{ items|default:"No data" }}</span>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No related items.</li>
+        {% endfor %}
+    </ul>
+    <small>*Note: These data will also deleted. So, if you have option to edit. Make sure before submitting.</small>
+    <hr>
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-danger" value="Confirm Delete">
+    <a onclick="history.back()" class="btn btn-secondary">Cancel</a>
+</form>
+</div>
+{% endblock content %}
+    

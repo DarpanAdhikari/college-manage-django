@@ -1,0 +1,151 @@
+{% extends "_master.html" %}
+{% block title %}
+   Manage Subjects
+{% endblock title %}
+{% block content %}
+    <div class="p-2 rounded text-light top-header">
+        <div class="container row">
+            <div class="d-flex gap-3">
+                <h4 class="mr-5 mt-2">Manage Subjects</h4>
+            </div>
+        </div>
+    </div>
+    <div class="row container">
+        <div class="col-md-12">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="course_code">Course Code:</label>
+                            <select class="form-select"
+                                    aria-label="Default select"
+                                    name="course_code"
+                                    id="course_code"
+                                    data-sem="{{ selected_semester_id }}"
+                                    required>
+                                    <option value="">Select Course</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course.course_id }}" {% if course.course_id == course_id %}selected{% endif %}>
+                                        {{ course.course_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="semester">Semester:</label>
+                            <select class="form-select"
+                                    aria-label="Default select"
+                                    name="semester"
+                                    id="semester"
+                                    required>
+                                <option value="">Select Semester</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div class="form-group mt-4">
+                            <button class="btn btn-info" id="addFieldButton" type="button">+ Add Subject</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="subject_fields">
+                    {% for subject in subject_data %}
+                    <input type="hidden" name="subject_id[]" value="{{ subject.subject_id }}">
+                    <div class="row mt-3">
+                      <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="subject_code">Subject Code:</label>
+                            <input type="text" class="form-control" name="subject_code[]" value="{{ subject.subject_code }}" placeholder="Subject Code">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                        <label for="subject_name">Subject Name:</label>
+                        <input type="text" class="form-control" name="subject_name[]" value="{{ subject.subject_name }}" placeholder="Subject Name">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                        <label for="full_marks">Full Marks:*</label>
+                        <input type="number" class="form-control" name="full_marks[]" value="{{ subject.full_marks }}" placeholder="Full Marks">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="pass_marks">Pass Marks:*</label>
+                        <input type="number" class="form-control" name="pass_marks[]" value="{{ subject.pass_marks }}" placeholder="Pass Marks">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                        <label for="credit_hours">Credit Hour:*</label>
+                        <input type="number" class="form-control" name="credit_hours[]" value="{{ subject.credit_hours }}" placeholder="Credit Hours">
+                        
+                        </div>
+                    </div>
+                    </div>
+                {% endfor %}
+                </div>
+                <input type="submit" class="btn btn-primary mt-3" value="Submit">
+            </form>
+        </div>
+    </div>
+    <hr>
+    <div id="filter-course-data">
+        <h6>Filter tables for specific course:</h6>
+        
+        {% if courses %}
+        {% for course in courses %}
+         <a href="{% url 'filter-subjects' course.course_id %}" class="btn {% if course.course_id == course_id %}btn-secondary {% else %} btn-info {% endif %} ml-3" {% if course.course_id == course_id %}onclick="event.preventDefault();" disabled{% endif %}>{{ course.course_name }}</a>
+        {% endfor %}
+        {% endif %}
+            
+    </div>
+    <hr>
+    <div id="course_data_container">
+        
+        {% if subjects_by_sem %}
+        {% for sem_id, data in subjects_by_sem.items %}
+            <h3 class="badge bg-success">Semester {{ data.semester_name }}</h3>
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">S.N.</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Full Marks</th>
+                    <th scope="col">Pass Marks</th>
+                    <th scope="col">Creadit Hour</th>
+                    <th scope="col">Action</th>
+                    <th>
+                        <a href="?semester={{ sem_id }}" class="btn btn-primary">Edit</a>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for subject in data.subjects %}
+                    <tr>
+                       <td>{{ forloop.counter }}</td>
+                       <td><span class="badge bg-info">{{ subject.subject_code }}</span></td>
+                       <td>{{ subject.subject_name }}</td>
+                       <td>{{ subject.full_marks }}</td>
+                       <td>{{ subject.pass_marks }}</td>
+                       <td>{{ subject.credit_hours }}</td>
+                       <td>
+                        <a href="{% url 'delete-subjects' subject.sub_id %}" class="btn btn-danger">Delete</a>
+                       </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              <hr>
+        {% endfor %}
+    {% else %}
+        <p class="badge bg-danger">No subjects.</p>
+    {% endif %}
+            
+    </div>
+{% endblock content %}
